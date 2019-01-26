@@ -387,4 +387,90 @@ namespace Falcor
     {
         detachCamera();
     }
+
+    CADCameraController::CADCameraController()
+    {
+        mSpeed = 4.f;
+    }
+
+    bool CADCameraController::onMouseEvent(const MouseEvent & mouseEvent)
+    {
+        if (!mpCamera)
+            return true;
+
+        bool handled = false;
+        switch (mouseEvent.type)
+        {
+        case MouseEvent::Type::Wheel:
+            mCameraDistance -= mouseEvent.wheelDelta.y * 0.2f * mSpeed;
+            mbDirty = true;
+            handled = true;
+            break;
+        case MouseEvent::Type::LeftButtonDown:
+            mLastRotation = project2DCrdToUnitSphere(convertCamPosRange(mouseEvent.pos));
+            mIsLeftButtonDown = true;
+            handled = true;
+            break;
+        case MouseEvent::Type::LeftButtonUp:
+            handled = mIsLeftButtonDown;
+            mIsLeftButtonDown = false;
+            break;
+        case MouseEvent::Type::RightButtonDown:
+            mLastPosition = mouseEvent.pos;
+            mIsRightButtonDown = true;
+            handled = true;
+            break;
+        case MouseEvent::Type::RightButtonUp:
+            handled = mIsRightButtonDown;
+            mIsRightButtonDown = false;
+            break;
+        case MouseEvent::Type::Move:
+            if (mIsLeftButtonDown)
+            {
+                glm::vec3 curVec = project2DCrdToUnitSphere(convertCamPosRange(mouseEvent.pos));
+                glm::quat q = createQuaternionFromVectors(mLastRotation, curVec);
+                glm::mat3x3 rot = (glm::mat3x3)q;
+                mRotation = rot * mRotation;
+                mLastRotation = curVec;
+
+                mbDirty = true;
+                handled = true;
+            }
+            else if (mIsRightButtonDown)
+            {
+                glm::vec2 currentPosition = mouseEvent.pos;
+                glm::vec2 pan = currentPosition - mLastPosition;
+                mLastPosition = currentPosition;
+
+                glm::vec3 up = glm::vec3(0, 1, 0) * mRotation;
+                glm::vec3 left = glm::vec3(-1, 0, 0) * mRotation;
+
+                mTarget += left * pan.x * mSpeed;
+                mTarget += up * pan.y * mSpeed;
+
+                mbDirty = true;
+                handled = true;
+            }
+            break;
+        default:
+            break;
+        }
+
+        return handled;
+    }
+
+    bool CADCameraController::update()
+    {
+        if (mpCamera && mbDirty)
+        {
+            mbDirty = false;
+            mpCamera->setTarget(mTarget);
+
+            mpCamera->setPosition(mTarget + glm::vec3(0, 0, 1) * mRotation * mCameraDistance);
+
+            mpCamera->setUpVector(glm::vec3(0, 1, 0) * mRotation);
+            return true;
+        }
+        return false;
+    }
 }

@@ -53,6 +53,7 @@ private:
     void setModelString(bool isAfterCull, float LoadTime);
 
     Model::SharedPtr mpModel = nullptr;
+    CADCameraController mCADCameraController;
     ModelViewCameraController mModelViewCameraController;
     FirstPersonCameraController mFirstPersonCameraController;
     SixDoFCameraController m6DoFCameraController;
@@ -67,10 +68,11 @@ private:
 
     enum
     {
+        CADCamera,
         ModelViewCamera,
         FirstPersonCamera,
         SixDoFCamera
-    } mCameraType = ModelViewCamera;
+    } mCameraType = CADCamera;
 
     CameraController& getActiveCameraController();
 

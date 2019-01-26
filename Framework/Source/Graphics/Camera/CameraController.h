@@ -71,6 +71,27 @@ namespace Falcor
         float mSpeed = 1;
     };
 
+    class CADCameraController : public CameraController
+    {
+    public:
+        CADCameraController();
+        bool onMouseEvent(const MouseEvent& mouseEvent) override;
+        bool update() override;
+
+    private:
+        bool mbDirty;
+
+        glm::vec3 mTarget;
+        float mCameraDistance = 10.f;
+        glm::mat3x3 mRotation;
+
+        glm::vec3 mLastRotation;
+        glm::vec2 mLastPosition;
+
+        bool mIsLeftButtonDown = false;
+        bool mIsRightButtonDown = false;
+    };
+
     /** Model-view camera controller. Orbits around a given point.
         To control the camera:
         * Left mouse click + movement will orbit around the model.

@@ -113,6 +113,14 @@ namespace Falcor
         */
         const glm::vec3& getUpVector() const {return mData.up;}
 
+        /** Get the camera's world space forward vector.
+        */
+        const glm::vec3 getForwardVector() const { return glm::normalize(mData.cameraW); }
+
+        /** Get the camera's world space right vector.
+        */
+        const glm::vec3 getRightVector() const { return glm::normalize(mData.cameraU); }
+
         /** Get the camera's world space target position.
         */
         const glm::vec3& getTarget() const { return mData.target; }

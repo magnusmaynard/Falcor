@@ -46,6 +46,8 @@ CameraController& ModelViewer::getActiveCameraController()
 {
     switch(mCameraType)
     {
+    case ModelViewer::CADCamera:
+        return mCADCameraController;
     case ModelViewer::ModelViewCamera:
         return mModelViewCameraController;
     case ModelViewer::FirstPersonCamera:
@@ -179,6 +181,7 @@ void ModelViewer::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
     }
 
     Gui::DropdownList cameraDropdown;
+    cameraDropdown.push_back({ CADCamera, "CAD" });
     cameraDropdown.push_back({ ModelViewCamera, "Model-View" });
     cameraDropdown.push_back({ FirstPersonCamera, "First-Person" });
     cameraDropdown.push_back({ SixDoFCamera, "6 DoF" });
@@ -256,6 +259,7 @@ void ModelViewer::onLoad(SampleCallbacks* pSample, RenderContext* pRenderContext
     dsDesc.setDepthTest(true);
     mpDepthTestDS = DepthStencilState::create(dsDesc);
 
+    mCADCameraController.attachCamera(mpCamera);
     mModelViewCameraController.attachCamera(mpCamera);
     mFirstPersonCameraController.attachCamera(mpCamera);
     m6DoFCameraController.attachCamera(mpCamera);
