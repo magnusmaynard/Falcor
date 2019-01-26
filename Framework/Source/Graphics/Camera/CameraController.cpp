@@ -463,12 +463,12 @@ namespace Falcor
     {
         if (mpCamera && mbDirty)
         {
-            mbDirty = false;
             mpCamera->setTarget(mTarget);
-
             mpCamera->setPosition(mTarget + glm::vec3(0, 0, 1) * mRotation * mCameraDistance);
-
             mpCamera->setUpVector(glm::vec3(0, 1, 0) * mRotation);
+
+            mbDirty = false;
+
             return true;
         }
         return false;
